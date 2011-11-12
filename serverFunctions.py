@@ -48,7 +48,7 @@ def validate_card_location(rackLocation):
         rackLocation = 0
     return rackLocation
 
-def is_in_streak(rack,location):
+def position_in_streak(rack,location):
     startingPoint = location
     lowestLocation = location - 4
     if lowestLocation < 0:
@@ -59,6 +59,27 @@ def is_in_streak(rack,location):
         else:
             break
     return location-startingPoint
+
+def is_in_streak(rack,location):
+    startingPoint = location
+    lowestLocation = location - 4
+    if lowestLocation < 0:
+        lowestLocation=0
+    for i in range(lowestLocation,location+1).reverse():
+        if rack[i]==rack[i+1]+1:
+            startingPoint = i
+        else:
+            break
+    endingPoint = location
+    highestLocation = location + 4
+    if highestLocation > 19:
+        highestLocation = 19
+    for i in range(location,highestLocation+1):
+        if rack[i]==rack[i-1]+1:
+            endingPoint=i
+        else:
+            break
+    return (startingPoint,endingPoint)
     
 def get_card_location_by_greater(rack,initLocation,card):
     rackLocation=len(rack)
