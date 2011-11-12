@@ -3,7 +3,8 @@ from pdb import set_trace
 import time
 
 gameTime = 0
-
+turn = 0
+turnLimit = 20
 #isSorted = lambda l : all(a <= b for a,b in __import__("itertools").izip(l[:-1],l[1:]))
 
 def isSorted(list):
@@ -16,25 +17,41 @@ def isSorted(list):
 
 def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     currentGame = rackoGame(game_id,player_id,initial_discard,other_player_id)
+    global turn
+    turn = 0
     print "created new racko game with player ID " + str(currentGame.player_id)
     return ''
 
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
-    middleIndex = find_middles(rack,discard)
-    addConsecutive = find_good_streak(rack,discard)
-    if addConsecutive:
-        return {'move':'request_discard','idx':addConsecutive}
-    elif middleIndex:
-        return {'move':'request_discard','idx':middleIndex}
+    global turn
+    global turnLimit
+    turn += 1
+    if turn>turnLimit:
+        middleIndex = find_middles(rack,discard)
+        addConsecutive = find_good_streak(rack,discard)
+        if addConsecutive:
+            return {'move':'request_discard','idx':addConsecutive}
+        elif middleIndex:
+            return {'move':'request_discard','idx':middleIndex}
+        else:
+            return from_deck_algorithm()
     else:
-        return from_deck_algorithm()
+        middleIndex = find_middles(rack,discard)
+        if middleIndex:
+            return {'move':'request_discard','idx':middleIndex}
+        else:
+            return from_deck_algorithm()
+        
     
 def find_good_streak(rack,card):
     for i in range(0,len(rack)):
         streak = is_in_streak(rack, i)
         if streak[0]:
             if rack[streak[0]]==card+1:
-                return streak[0]-1
+                out = streak[0]-1
+                if out<0:
+                    out = 0
+                return out
         if streak[1]:
             if rack[streak[1]]==card-1:
                 out = streak[1]+1
@@ -59,15 +76,24 @@ def from_deck_algorithm():
     return {'move':'request_deck'}
     
 def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
-    middleIndex = find_middles(rack,card)
-    streak = find_good_streak(rack,card)
-    if streak:
-        return streak
-    elif middleIndex:
-        return middleIndex
+    global turn
+    global turnLimit
+    if turn>turnLimit:
+        middleIndex = find_middles(rack,card)
+        streak = find_good_streak(rack,card)
+        if streak:
+            return streak
+        elif middleIndex:
+            return middleIndex
+        else:
+            return buncher_algorithm(card,rack)
     else:
-        return buncher_algorithm(card,rack)
-    return 7
+        middleIndex = find_middles(rack,card)
+        if middleIndex:
+            return middleIndex
+        else:
+            return buncher_algorithm(card,rack)
+        
 
     
 def pick_card_location(card,rack):
@@ -148,8 +174,7 @@ def get_card_location_by_greater(rack,initLocation,card):
     return rackLocation
 
 def move_racko_result(game_id,move,xmlStruct):
-    if xmlStruct.has_key('reason'):
-        print xmlStruct['reason']
+    print xmlStruct
     return ''
 
 def racko_game_result(game_id,your_score,other_score,reason):
