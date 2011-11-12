@@ -17,6 +17,9 @@ def discard_algorithm(rack,discard):
     newLocation = pick_card_location(discard,rack)
     response = {'move':'request_discard','idx':newLocation}
     return response # this is a super dummy move to make, remove when we have brains
+
+def from_deck_algorithm():
+    return {'move':'request_deck'}
     
 def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
     pick_card_location(card,rack)
