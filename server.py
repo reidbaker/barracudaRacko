@@ -1,5 +1,5 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from serverGame import *
+from serverFunctions import *
 import logging
 
 # Set up logging

@@ -12,12 +12,24 @@ def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     return ''
 
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
-    return from_deck_algorithm()
+    middleIndex = find_middles_from_discard(rack,discard)
+    if middleIndex:
+        print 'did middle index'
+        return {'move':'request_discard','idx':middleIndex}
+    else:
+        return from_deck_algorithm()
 
 def discard_algorithm(rack,discard):
     newLocation = pick_card_location(discard,rack)
     response = {'move':'request_discard','idx':newLocation}
     return response # this is a super dummy move to make, remove when we have brains
+
+def find_middles_from_discard(rack,discard):
+    for i in range(1,len(rack)-1):
+        if discard>rack[i-1] and discard<rack[i+1]: # check to see if discard card fits between window
+            if rack[i-1]<rack[i+1] and rack[i]>rack[i+1]: # check to see if middle of window is out of place
+                return i
+    return None
 
 def from_deck_algorithm():
     return {'move':'request_deck'}
