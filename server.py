@@ -1,37 +1,50 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from serverFunctions import *
 import logging
+import xmlrpclib
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
-server = SimpleXMLRPCServer(('172.16.89.213', 80), logRequests=True)
+server = SimpleXMLRPCServer(('172.16.89.213', 80), logRequests=False)
 
 # Expose a function
 def ping(message):
     """
     """
     if message=='ping':
+        print "ping"
         return 'pong'
     else:
         return ''
     
+
+def start_game(xmlStruct):
+    print "starting game"
+    return start_racko_game(xmlStruct['game_id'],xmlStruct['player_id'],xmlStruct['initial_discard'],xmlStruct['other_player_id'])
+
+def get_move(xmlStruct):
+    response = get_racko_move(xmlStruct['game_id'],xmlStruct['rack'],xmlStruct['discard'],xmlStruct['remaining_microseconds'],xmlStruct['other_player_moves'])
+    print response
+    return response
+
+def get_deck_exchange(xmlStruct):
+    return get_racko_deck_exchange(xmlStruct['game_id'],xmlStruct['remaining_microseconds'],xmlStruct['rack'],xmlStruct['card'])
+
+def move_result(xmlStruct):
+    return move_racko_result(xmlStruct['game_id'],xmlStruct['move'])
+
+def game_result(xmlStruct):
+    print "game result: " + xmlStruct['reason']
+    print "our score:" + xmlStruct['your_score']
+    print "and their score:" + xmlStruct['other_score']
+    return racko_game_result(xmlStruct['game_id'],xmlStruct['your_score'],xmlStruct['other_score'],xmlStruct['reason'])
+
 server.register_function(ping)
-
-def start_game(game_id,player_id,initial_discard,other_player_id):
-    return start_racko_game(game_id,player_id,initial_discard,other_player_id)
-
-def get_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
-    return get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves)
-
-def get_deck_exchange(game_id,remaining_microseconds,rack,card):
-    return get_racko_deck_exchange(game_id,remaining_microseconds,rack,card)
-
-def move_result(game_id,move):
-    return move_racko_result(game_id,move)
-
-def game_result(game_id,your_score,other_score,reason):
-    return racko_game_result(game_id,your_score,other_score,reason)
-
+server.register_function(start_game)
+server.register_function(get_move)
+server.register_function(get_deck_exchange)
+server.register_function(move_result)
+server.register_function(game_result)
 
 try:
     print 'Use Control-C to exit'

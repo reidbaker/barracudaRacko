@@ -1,4 +1,5 @@
 from rackoGame import rackoGame
+import xmlrpclib
 
 def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     currentGame = rackoGame(game_id,player_id,initial_discard,other_player_id)
@@ -6,7 +7,9 @@ def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     return ''
 
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
-    return {'move':'request_deck'} # this is a super dummy move to make, remove when we have brains
+    #if other_player_moves[0][1]['move']=='illegal'
+    response = {'move':'request_deck'}
+    return response # this is a super dummy move to make, remove when we have brains
     
 def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
     return card/4 # again, super dummy
