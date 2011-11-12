@@ -1,9 +1,10 @@
 from rackoGame import rackoGame
-#from pdb import set_trace
+from pdb import set_trace
 import time
 
 gameTime = 0
-
+turn = 0
+turnLimit = 30
 #isSorted = lambda l : all(a <= b for a,b in __import__("itertools").izip(l[:-1],l[1:]))
 
 def isSorted(list):
@@ -16,22 +17,60 @@ def isSorted(list):
 
 def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     currentGame = rackoGame(game_id,player_id,initial_discard,other_player_id)
+    global turn
+    turn = 0
     print "created new racko game with player ID " + str(currentGame.player_id)
     return ''
 
+def five_streak(rack):
+    for i in range(0,len(rack)-5):
+        window = rack[i:i+5]
+        for j in range(0,len(window)):
+            if j==4 and window[j]==window[j-1]+1:
+                print 'found 5 in a row!'
+                return True
+            elif window[j] is not window[j-1]+1:
+                break
+    return False
+
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
-    middleIndex = find_middles(rack,discard)
-    addConsecutive = None #find_good_streak(rack,discard)
-    if middleIndex:
-        print 'put a ' + str(discard) + ' from the discard pile in the ' + str(middleIndex) + ' index, the old value was ' + str(rack[middleIndex])
-        return {'move':'request_discard','idx':middleIndex}
-    elif addConsecutive:
-        return {'move':'request_discard','idx':addConsecutive}
+    global turn
+    global turnLimit
+    turn += 1
+    if turn>turnLimit:
+        middleIndex = find_middles(rack,discard)
+        if not five_streak(rack):
+            addConsecutive = find_good_streak(rack,discard)
+            if addConsecutive:
+                return {'move':'request_discard','idx':addConsecutive}
+        if middleIndex:
+            return {'move':'request_discard','idx':middleIndex}
+        else:
+            return from_deck_algorithm()
     else:
-        return from_deck_algorithm()
+        middleIndex = find_middles(rack,discard)
+        if middleIndex:
+            return {'move':'request_discard','idx':middleIndex}
+        else:
+            return from_deck_algorithm()
+        
     
-def find_good_streak(rack,discard):
-    pass
+def find_good_streak(rack,card):
+    for i in range(0,len(rack)):
+        streak = is_in_streak(rack, i)
+        if streak[0]:
+            if rack[streak[0]]==card+1:
+                out = streak[0]-1
+                if out<0:
+                    out = 0
+                return out
+        if streak[1]:
+            if rack[streak[1]]==card-1:
+                out = streak[1]+1
+                if out>19:
+                    out = 19
+                return out
+    return None
 
 def discard_algorithm(rack,discard):
     newLocation = pick_card_location(discard,rack)
@@ -49,16 +88,34 @@ def from_deck_algorithm():
     return {'move':'request_deck'}
     
 def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
-    middleIndex = find_middles(rack,card)
-    if middleIndex:
-        return middleIndex
+    global turn
+    global turnLimit
+    if turn>turnLimit:
+        middleIndex = find_middles(rack,card)
+        if not five_streak(rack):
+            streak = find_good_streak(rack,card)
+            if streak:
+                return streak
+        if middleIndex:
+            return middleIndex
+        else:
+            return buncher_algorithm(card,rack)
     else:
-        return buncher_algorithm(card,rack)
+        middleIndex = find_middles(rack,card)
+        if middleIndex:
+            return middleIndex
+        else:
+            return buncher_algorithm(card,rack)
+        
+
     
 def pick_card_location(card,rack):
-    rackLocation = (card-1)/4
+    rackLocation = (card)/4
     rackLocation = validate_card_location(rackLocation)
     if rackLocation>=0 and rackLocation<=19:
+        streak = is_in_streak(rack,rackLocation)
+        if streak[0]:
+            return streak[0]-1
         return rackLocation
     else:
         print "big fucking error: " + str(rackLocation)
@@ -69,12 +126,11 @@ def buncher_algorithm(card,rack):
     if isSorted(rack):
         greaterLocation =  get_card_location_by_greater(rack,initLocation,card)
         streakRange = is_in_streak(rack,greaterLocation)
-        if (streakRange[0]==greaterLocation) and not (streakRange[1]==greaterLocation):
-            return streakRange[0]-1
-        else:
-            return greaterLocation
+        if streakRange[0]:
+            if (streakRange[0]==greaterLocation) and not (streakRange[1]==greaterLocation):
+                return streakRange[0]-1
+        return greaterLocation
     else:
-        print "not sorted" + str(rack)
         return initLocation
     
 def validate_card_location(rackLocation):
@@ -100,7 +156,7 @@ def is_in_streak(rack,location):
     return (find_start_of_streak(rack,location),find_end_of_streak(rack,location))
 
 def find_start_of_streak(rack,location):
-    startingPoint = location
+    startingPoint = None
     checkRange = range(0,location)
     checkRange.reverse()
     for i in checkRange:
@@ -111,7 +167,7 @@ def find_start_of_streak(rack,location):
     return startingPoint
 
 def find_end_of_streak(rack,location):
-    endingPoint = location
+    endingPoint = None
     if location==len(rack)-1:
         location = len(rack)-2
     for i in range(location+1,len(rack)):
