@@ -40,10 +40,10 @@ def buncher_algorithm(card,rack):
         greaterLocation =  get_card_location_by_greater(rack,initLocation,card)
         streakRange = is_in_streak(rack,greaterLocation)
         if (streakRange[0]==greaterLocation) and not (streakRange[1]==greaterLocation):
-            print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so DID put before"
+            #print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so DID put before"
             return greaterLocation-1
         else:
-            print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so didn't put before"
+            #print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so didn't put before"
             return greaterLocation
     else:
         return initLocation
