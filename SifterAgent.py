@@ -26,6 +26,7 @@ class SifterAgent(object):
         observe the opponent move
         updates card all values
         """
+        self.game.discard_pile.append(move)
         return
     
 	def getAction(self,move):
