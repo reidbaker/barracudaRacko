@@ -14,6 +14,8 @@ def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_move
     
 def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
     response = card/4
+#    if rack[response]<card:
+#        for i in range(0,len(range))
     if response>=20:
         response=19
     elif response<=-1:
@@ -26,9 +28,6 @@ def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
         return 7
 
 def move_racko_result(game_id,move,xmlStruct):
-    print xmlStruct
-    if 'reason' in xmlStruct:
-        print 'illegal: ' + xmlStruct.reason
     return ''
 
 def racko_game_result(game_id,your_score,other_score,reason):
