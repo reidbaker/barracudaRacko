@@ -11,6 +11,10 @@ def list_contents(dir_name):
     return os.listdir(dir_name)
 server.register_function(list_contents)
 
+def ping(message):
+    if message=='ping':
+        return 'pong'
+
 try:
     print 'Use Control-C to exit'
     server.serve_forever()
