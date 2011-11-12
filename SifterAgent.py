@@ -9,6 +9,7 @@ class SifterAgent(object):
         self.scored_self_rack = [] #agent's own rack, ranked by expected value of cards in rack (min heap)
 		self.fuzzy_rack = [] #rack of cards with unknown status, where current value is weighted by probability (max heap)
 		self.turn = 0
+        self.current_rack_score = -1000
         
 		""" available data from game object
         self.game_id = game_id
@@ -36,16 +37,18 @@ class SifterAgent(object):
         -if new score > old, return "discard" and index
         -return "get deck exchange"
         """
+        
         observeOpponentMove(move)
         oldscore = evaluateRack(self.game.currentRack) 
         newHand = self.game.currentRack.copy()
         placement = placeCard(newHand,self.game.discard_pile.last())
-        newHand.replace(placement,self.game.discard_pile.last)
+        newHand[placement] = self.game.discard_pile[len(self.game.discard_pile)-1]
         newScore = evaluateRack(newHand)
         if newScore > oldScore: 
             return ('request_discard', placement)
         return ('request_deck',None)
-		
+        
+        	
 	def drawCard(self,card):
         """
         receives card value
@@ -53,9 +56,14 @@ class SifterAgent(object):
         """
         response = placeCard(self.game.currentRack,card)
 		return response
-    
+        
     def placeCard(self,rack,card):
-        return 0
+        placement_scores = []
+        for i in range(len(self.game.current_rack)-1):
+            newHand = rack.copy()
+            newHand[i] = self.game.discard_pile[len(self.game.discard_pile)-1]
+            placement_scores.append( evaluateRack(newHand),i )
+        return max(placement_scores)[1]
         
     def evaluateRack(self, currentHand):
         score=0.0
