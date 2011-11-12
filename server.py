@@ -1,5 +1,5 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from serverFunctions import *
+from playground import *
 import logging
 
 # Set up logging
@@ -8,26 +8,23 @@ server = SimpleXMLRPCServer(('172.16.89.213', 80), logRequests=False)
 
 # Expose a function
 def ping(message):
-    """
-    """
-    if message=='ping':
-        print "ping"
-        return 'pong'
-    else:
-        return ''
+        return 'pong' if message=="ping" else ''
     
 
 def start_game(xmlStruct):
     return start_racko_game(xmlStruct['game_id'],xmlStruct['player_id'],xmlStruct['initial_discard'],xmlStruct['other_player_id'])
 
 def get_move(xmlStruct):
-    return get_racko_move(xmlStruct['game_id'],xmlStruct['rack'],xmlStruct['discard'],xmlStruct['remaining_microseconds'],xmlStruct['other_player_moves'])
+    response = get_racko_move(xmlStruct['game_id'],xmlStruct['rack'],xmlStruct['discard'],xmlStruct['remaining_microseconds'],xmlStruct['other_player_moves'])
+    return response
 
 def get_deck_exchange(xmlStruct):
-    return get_racko_deck_exchange(xmlStruct['game_id'],xmlStruct['remaining_microseconds'],xmlStruct['rack'],xmlStruct['card'])
+    response = get_racko_deck_exchange(xmlStruct['game_id'],xmlStruct['remaining_microseconds'],xmlStruct['rack'],xmlStruct['card'])
+    return response
 
 def move_result(xmlStruct):
-    return move_racko_result(xmlStruct['game_id'],xmlStruct['move'],xmlStruct)
+    response = move_racko_result(xmlStruct['game_id'],xmlStruct['move'],xmlStruct)
+    return response
 
 def game_result(xmlStruct):
     return racko_game_result(xmlStruct['game_id'],xmlStruct['your_score'],xmlStruct['other_score'],xmlStruct['reason'])
