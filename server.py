@@ -5,7 +5,7 @@ import xmlrpclib
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
-server = SimpleXMLRPCServer(('172.16.93.28', 80), logRequests=False)
+server = SimpleXMLRPCServer(('172.16.89.213', 80), logRequests=False)
 
 # Expose a function
 def ping(message):
