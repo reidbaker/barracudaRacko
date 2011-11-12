@@ -37,7 +37,16 @@ def pick_card_location(card,rack):
 def buncher_algorithm(card,rack):
     initLocation = pick_card_location(card,rack)
     if isSorted(rack):
-        return get_card_location_by_greater(rack,initLocation,card)
+        greaterLocation =  get_card_location_by_greater(rack,initLocation,card)
+        streakRange = is_in_streak(rack,greaterLocation)
+#        print "streak range is: " + str(streakRange)
+#        print "the greaterLocation is: " + str(greaterLocation)
+        if (streakRange[0]==greaterLocation) and not (streakRange[1]==greaterLocation):
+            print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so DID put before"
+            return greaterLocation-1
+        else:
+            print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so didn't put before"
+            return greaterLocation
     else:
         return initLocation
     
@@ -62,19 +71,21 @@ def position_in_streak(rack,location):
 
 def is_in_streak(rack,location):
     startingPoint = location
-    lowestLocation = location - 4
-    if lowestLocation < 0:
-        lowestLocation=0
-    for i in range(lowestLocation,location+1).reverse():
-        if rack[i]==rack[i+1]+1:
+#    lowestLocation = location - 4
+#    if lowestLocation < 0:
+#        lowestLocation=0
+    rangeVec = range(0,location)
+    rangeVec.reverse()
+    for i in rangeVec:
+        if rack[i+1]-1==rack[i]:
             startingPoint = i
         else:
             break
     endingPoint = location
-    highestLocation = location + 4
-    if highestLocation > 19:
-        highestLocation = 19
-    for i in range(location,highestLocation+1):
+#    highestLocation = location + 4
+#    if highestLocation > 19:
+#        highestLocation = 19
+    for i in range(location,len(rack)):
         if rack[i]==rack[i-1]+1:
             endingPoint=i
         else:
