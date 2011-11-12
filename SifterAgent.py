@@ -66,8 +66,30 @@ class SifterAgent(object):
         return max(placement_scores)[1]
         
     def evaluateRack(self, currentHand):
-        score=0.0
-        return score
+        rack_scores = [0 for i in currentHand]
+        for i in xrange(len(currentHand)):
+            #evaluate heuristics here
+            score = 0
+            faceval = currentHand[i]+1
+            #dist from ideal hash
+            score -= faceval/4 - i
+            if 80-faceval <= 20-i :
+                score-=5
+            elif faceval <= i :
+                score-=5
+            if i< len(currentHand)-1 and currentHand[i+1] == faceVal+1:
+                score += 5
+                rack_scores[i+1] +=5
+            if i < len(currentHand)-1 and faceval > currentHand[i+1]:
+               score-=3
+               if i<1:
+                upperDist = abs(currentHand[i+1]-faceval)
+                lowerDist = abs(currentHand[i-1]-faceval)
+                if upperDist<5 and upperDist>1 or lowerDist<5 and upperDist>1:
+                    score -= 3
+            rackscores[i]+=score
+        rack_scores = [(len(rack_scores)-i)**2 for i in rack_scores]
+        return sum(rack_scores)
     	
         """
 		GENERATES THE NEXT MOVE
