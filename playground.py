@@ -22,7 +22,7 @@ def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     print "created new racko game with player ID " + str(currentGame.player_id)
     return ''
 
-def five_streak(rack):
+def six_streak(rack):
     for i in range(0,len(rack)-5):
         window = rack[i:i+5]
         for j in range(0,len(window)):
@@ -31,6 +31,19 @@ def five_streak(rack):
                 return True
             elif window[j] is not window[j-1]+1:
                 break
+    return False
+    
+def five_streak(rack):
+    curStreak = 0;
+    for i in xrange(1,len(rack)):
+        if curStreak >= 5:
+            return True
+
+        if(rack[i-1] < rack[i]):
+            curStreak+=1
+        else:
+            curStreak = 0
+		    
     return False
 
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
