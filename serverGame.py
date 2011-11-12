@@ -1,7 +1,7 @@
 from rackoGame import rackoGame
 import xmlrpclib
 from pdb import set_trace
-from SifterAgent import SifterAgent
+from naiveAgent import naiveAgent
 
 currentAgent = None
 
@@ -9,7 +9,7 @@ def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     currentGame = rackoGame(game_id,player_id,initial_discard,other_player_id)
     print "created new racko game with player ID " + str(currentGame.player_id)
 	global currentAgent
-	currentAgent = SifterAgent(currentGame)
+	currentAgent = naiveAgent(currentGame)
     return ''
 
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):

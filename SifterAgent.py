@@ -1,4 +1,4 @@
-class SiftAgent(object):
+class siftAgent(object):
     def __init__(self,game_object):
         """
         constructor for a SiftAgent
@@ -47,6 +47,7 @@ class SiftAgent(object):
 		-return action
 		"""
 		return
+		
 	def drawCard(self):
 		return
 		
