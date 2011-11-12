@@ -19,24 +19,18 @@ def ping(message):
     
 
 def start_game(xmlStruct):
-    print "starting game"
     return start_racko_game(xmlStruct['game_id'],xmlStruct['player_id'],xmlStruct['initial_discard'],xmlStruct['other_player_id'])
 
 def get_move(xmlStruct):
-    response = get_racko_move(xmlStruct['game_id'],xmlStruct['rack'],xmlStruct['discard'],xmlStruct['remaining_microseconds'],xmlStruct['other_player_moves'])
-    print response
-    return response
+    return get_racko_move(xmlStruct['game_id'],xmlStruct['rack'],xmlStruct['discard'],xmlStruct['remaining_microseconds'],xmlStruct['other_player_moves'])
 
 def get_deck_exchange(xmlStruct):
     return get_racko_deck_exchange(xmlStruct['game_id'],xmlStruct['remaining_microseconds'],xmlStruct['rack'],xmlStruct['card'])
 
 def move_result(xmlStruct):
-    return move_racko_result(xmlStruct['game_id'],xmlStruct['move'])
+    return move_racko_result(xmlStruct['game_id'],xmlStruct['move'],xmlStruct)
 
 def game_result(xmlStruct):
-    print "game result: " + xmlStruct['reason']
-    print "our score:" + xmlStruct['your_score']
-    print "and their score:" + xmlStruct['other_score']
     return racko_game_result(xmlStruct['game_id'],xmlStruct['your_score'],xmlStruct['other_score'],xmlStruct['reason'])
 
 server.register_function(ping)
