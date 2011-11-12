@@ -1,6 +1,10 @@
 from rackoGame import rackoGame
-import xmlrpclib
-from pdb import set_trace
+#from pdb import set_trace
+import time
+
+gameTime = 0
+
+isSorted = lambda l : all(a <= b for a,b in __import__("itertools").izip(l[:-1],l[1:]))
 
 def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     currentGame = rackoGame(game_id,player_id,initial_discard,other_player_id)
@@ -8,24 +12,93 @@ def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     return ''
 
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
-    #if other_player_moves[0][1]['move']=='illegal'
-    response = {'move':'request_deck'}
+    return from_deck_algorithm()
+
+def discard_algorithm(rack,discard):
+    newLocation = pick_card_location(discard,rack)
+    response = {'move':'request_discard','idx':newLocation}
     return response # this is a super dummy move to make, remove when we have brains
+
+def from_deck_algorithm():
+    return {'move':'request_deck'}
     
 def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
-    response = card/4
-#    if rack[response]<card:
-#        for i in range(0,len(range))
-    if response>=20:
-        response=19
-    elif response<=-1:
-        response = 0
+    return buncher_algorithm(card,rack)
     
-    if response>=0 and response<=19:
-        return response
+def pick_card_location(card,rack):
+    rackLocation = card/4
+    rackLocation = validate_card_location(rackLocation)
+    if rackLocation>=0 and rackLocation<=19:
+        return rackLocation
     else:
-        print "big fucking error: " + str(response)
+        print "big fucking error: " + str(rackLocation)
         return 7
+
+def buncher_algorithm(card,rack):
+    initLocation = pick_card_location(card,rack)
+    if isSorted(rack):
+        greaterLocation =  get_card_location_by_greater(rack,initLocation,card)
+        streakRange = is_in_streak(rack,greaterLocation)
+        if (streakRange[0]==greaterLocation) and not (streakRange[1]==greaterLocation):
+            print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so DID put before"
+            return greaterLocation-1
+        else:
+            print str(rack) + " streak from: " + str(streakRange[0]) + " to " + str(streakRange[1]) + " so didn't put before"
+            return greaterLocation
+    else:
+        return initLocation
+    
+def validate_card_location(rackLocation):
+    if rackLocation>=20:
+        rackLocation=19
+    elif rackLocation<=-1:
+        rackLocation = 0
+    return rackLocation
+
+def position_in_streak(rack,location):
+    startingPoint = location
+    lowestLocation = location - 4
+    if lowestLocation < 0:
+        lowestLocation=0
+    for i in range(lowestLocation,location+1).reverse():
+        if rack[i]==rack[i+1]+1:
+            startingPoint = i
+        else:
+            break
+    return location-startingPoint
+
+def is_in_streak(rack,location):
+    return (find_start_of_streak(rack,location),find_end_of_streak(rack,location))
+
+def find_start_of_streak(rack,location):
+    startingPoint = location
+    checkRange = range(0,location)
+    checkRange.reverse()
+    for i in checkRange:
+        if rack[i]==rack[i+1]-1:
+            startingPoint = i
+        else:
+            break
+    return startingPoint
+
+def find_end_of_streak(rack,location):
+    endingPoint = location
+    if location==len(rack)-1:
+        location = len(rack)-2
+    for i in range(location+1,len(rack)):
+        if rack[i]==rack[i-1]+1:
+            endingPoint = i
+        else:
+            break
+    return endingPoint
+
+def get_card_location_by_greater(rack,initLocation,card):
+    rackLocation=len(rack)-1
+    for i in range(initLocation,len(rack)):
+        if rack[i]>card:
+            rackLocation=i
+            break
+    return rackLocation
 
 def move_racko_result(game_id,move,xmlStruct):
     return ''
