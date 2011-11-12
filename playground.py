@@ -4,7 +4,7 @@ import time
 
 gameTime = 0
 turn = 0
-turnLimit = 20
+turnLimit = 30
 #isSorted = lambda l : all(a <= b for a,b in __import__("itertools").izip(l[:-1],l[1:]))
 
 def isSorted(list):
@@ -22,16 +22,28 @@ def start_racko_game(game_id,player_id,initial_discard,other_player_id):
     print "created new racko game with player ID " + str(currentGame.player_id)
     return ''
 
+def five_streak(rack):
+    for i in range(0,len(rack)-5):
+        window = rack[i:i+5]
+        for j in range(0,len(window)):
+            if j==4 and window[j]==window[j-1]+1:
+                print 'found 5 in a row!'
+                return True
+            elif window[j] is not window[j-1]+1:
+                break
+    return False
+
 def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_moves):
     global turn
     global turnLimit
     turn += 1
     if turn>turnLimit:
         middleIndex = find_middles(rack,discard)
-        addConsecutive = find_good_streak(rack,discard)
-        if addConsecutive:
-            return {'move':'request_discard','idx':addConsecutive}
-        elif middleIndex:
+        if not five_streak(rack):
+            addConsecutive = find_good_streak(rack,discard)
+            if addConsecutive:
+                return {'move':'request_discard','idx':addConsecutive}
+        if middleIndex:
             return {'move':'request_discard','idx':middleIndex}
         else:
             return from_deck_algorithm()
@@ -80,10 +92,11 @@ def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
     global turnLimit
     if turn>turnLimit:
         middleIndex = find_middles(rack,card)
-        streak = find_good_streak(rack,card)
-        if streak:
-            return streak
-        elif middleIndex:
+        if not five_streak(rack):
+            streak = find_good_streak(rack,card)
+            if streak:
+                return streak
+        if middleIndex:
             return middleIndex
         else:
             return buncher_algorithm(card,rack)
@@ -116,8 +129,7 @@ def buncher_algorithm(card,rack):
         if streakRange[0]:
             if (streakRange[0]==greaterLocation) and not (streakRange[1]==greaterLocation):
                 return streakRange[0]-1
-        else:
-            return greaterLocation
+        return greaterLocation
     else:
         return initLocation
     
@@ -174,7 +186,6 @@ def get_card_location_by_greater(rack,initLocation,card):
     return rackLocation
 
 def move_racko_result(game_id,move,xmlStruct):
-    print xmlStruct
     return ''
 
 def racko_game_result(game_id,your_score,other_score,reason):
