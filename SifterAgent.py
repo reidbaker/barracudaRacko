@@ -32,7 +32,19 @@ class SiftAgent(object):
 		GENERATES THE NEXT MOVE
 		//step 1
 		-evaluate the goodness of our hand
+			-get raw goodness from global
+			-update scores with our heuristics
 		-pick out the weakest card to discard(pop on min priority)
-		-update all card values
-		//step
+		-update card values in global
+		//step 2
+		-calc goodness on incoming cards
+			-raw goodness is weighted by their expected value
+		-pick best card to replace discarded
+			 -fuzzy cards weighted by probablity of draw
+			 -discard pile cards weighted by probability of helping?
+		-update global and player rack
+		-return action
 		"""
+		return
+		
+	
