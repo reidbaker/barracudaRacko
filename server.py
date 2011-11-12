@@ -8,7 +8,6 @@ server = SimpleXMLRPCServer(('172.16.89.213', 80), logRequests=True)
 # Expose a function
 def ping(message):
     """
-    
     """
     if message=='ping':
         return 'pong'
