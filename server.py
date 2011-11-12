@@ -1,7 +1,6 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from serverFunctions import *
+from serverGame import *
 import logging
-import xmlrpclib
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
