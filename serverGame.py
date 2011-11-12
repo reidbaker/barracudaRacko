@@ -1,6 +1,7 @@
 from rackoGame import rackoGame
 import xmlrpclib
 from pdb import set_trace
+from SifterAgent import SifterAgent
 
 currentAgent = None
 
