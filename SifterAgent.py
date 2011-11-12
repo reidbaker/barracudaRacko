@@ -20,16 +20,17 @@ class SiftAgent(object):
         self.unknown_cards = [] # should be the 59 cards NOT in the discard_pile + current_rack
 		"""
     
-	def recievePlayerMove(self,move):
+	def observeOpponentMove(self,move):
         """
         observe the opponent move
         updates card all values
         """
         return
     
-	def generateAction(self):
+	def getAction(self,move):
 		"""
 		GENERATES THE NEXT MOVE
+		//step 0 observe opponent's last move and update accordingly
 		//step 1
 		-evaluate the goodness of our hand
 			-get raw goodness from global
@@ -45,6 +46,8 @@ class SiftAgent(object):
 		-update global and player rack
 		-return action
 		"""
+		return
+	def drawCard(self):
 		return
 		
 	
