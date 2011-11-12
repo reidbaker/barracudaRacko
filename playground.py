@@ -39,14 +39,13 @@ def get_racko_move(game_id,rack,discard,remaining_microseconds,other_player_move
     turn += 1
     if turn>turnLimit:
         middleIndex = find_middles(rack,discard)
+        if middleIndex:
+            return {'move':'request_discard','idx':middleIndex}
         if not five_streak(rack):
             addConsecutive = find_good_streak(rack,discard)
             if addConsecutive:
                 return {'move':'request_discard','idx':addConsecutive}
-        if middleIndex:
-            return {'move':'request_discard','idx':middleIndex}
-        else:
-            return from_deck_algorithm()
+        return from_deck_algorithm()
     else:
         middleIndex = find_middles(rack,discard)
         if middleIndex:
@@ -92,14 +91,13 @@ def get_racko_deck_exchange(game_id,remaining_microseconds,rack,card):
     global turnLimit
     if turn>turnLimit:
         middleIndex = find_middles(rack,card)
+        if middleIndex:
+            return middleIndex
         if not five_streak(rack):
             streak = find_good_streak(rack,card)
             if streak:
                 return streak
-        if middleIndex:
-            return middleIndex
-        else:
-            return buncher_algorithm(card,rack)
+        return buncher_algorithm(card,rack)
     else:
         middleIndex = find_middles(rack,card)
         if middleIndex:
